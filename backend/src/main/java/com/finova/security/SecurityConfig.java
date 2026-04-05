@@ -59,8 +59,8 @@ public class SecurityConfig {
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // Add JWT filter before Spring's username/password filter
             .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
+            .addFilterBefore(jwtAuthenticationFilter(jwtService, userDetailsService()),
+        UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -76,6 +76,12 @@ public class SecurityConfig {
             )
             .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
+
+@Bean
+public JwtAuthenticationFilter jwtAuthenticationFilter(JwtService jwtService,
+                                                       UserDetailsService userDetailsService) {
+    return new JwtAuthenticationFilter(jwtService, userDetailsService);
+}
 
     /** Authentication provider that uses DB user + BCrypt */
     @Bean

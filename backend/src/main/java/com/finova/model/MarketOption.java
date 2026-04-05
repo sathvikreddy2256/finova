@@ -19,9 +19,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "investment_options")
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class MarketOption {
 
     @Id

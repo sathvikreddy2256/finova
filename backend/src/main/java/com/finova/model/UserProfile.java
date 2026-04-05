@@ -18,9 +18,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "user_profiles")
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class UserProfile {
 
     @Id

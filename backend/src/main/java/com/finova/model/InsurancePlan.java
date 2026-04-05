@@ -18,9 +18,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "insurance_plans")
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class InsurancePlan {
 
     @Id

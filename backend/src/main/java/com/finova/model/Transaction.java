@@ -19,9 +19,6 @@ import lombok.*;
 @Entity
 @Table(name = "transactions")
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Transaction {
 
     @Id

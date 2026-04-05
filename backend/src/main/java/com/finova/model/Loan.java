@@ -19,9 +19,6 @@ import lombok.*;
 @Entity
 @Table(name = "loans")
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Loan {
 
     @Id

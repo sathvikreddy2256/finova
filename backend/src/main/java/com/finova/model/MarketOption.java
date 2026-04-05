@@ -5,6 +5,12 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 /**
  * MarketOption — represents investable assets (Large Cap, Gold, etc.)
  * Stored in investment_options table.

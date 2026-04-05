@@ -4,6 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+
 /**
  * InsurancePlan — plans stored in the DB, seeded once.
  * Used by the recommendation engine to match against user profile.

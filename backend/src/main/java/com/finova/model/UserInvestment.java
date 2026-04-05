@@ -6,6 +6,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+
 /**
  * UserInvestment — a user's actual position in a MarketOption.
  * Stores the buy price and units so we can compute real P&L.

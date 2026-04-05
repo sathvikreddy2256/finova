@@ -35,11 +35,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
+
     private final UserRepository userRepository;
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    @Value("${cors.allowed-origins}")
-    private String allowedOrigins;
+   
+    @Value("${cors.allowed-origins}")    private String allowedOrigins;
 
     /** Security filter chain — defines which endpoints need authentication */
     @Bean

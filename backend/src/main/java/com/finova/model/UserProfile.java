@@ -5,6 +5,11 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 /**
  * UserProfile entity.
  * Stores onboarding data collected from the user after first login.

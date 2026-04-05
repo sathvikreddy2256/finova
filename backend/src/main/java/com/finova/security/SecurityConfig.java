@@ -19,52 +19,42 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.*;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Spring Security configuration.
- * Sets up JWT-based stateless authentication, CORS, and endpoint access rules.
- */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-
     private final UserRepository userRepository;
-   
-    @Value("${cors.allowed-origins}")    private String allowedOrigins;
+    private final JwtAuthenticationFilter jwtAuthFilter; // ✅ inject directly
 
-    /** Security filter chain — defines which endpoints need authentication */
+    @Value("${cors.allowed-origins}")
+    private String allowedOrigins;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
-            // Disable CSRF (not needed for stateless JWT APIs)
             .csrf(AbstractHttpConfigurer::disable)
-            // Enable CORS
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            // Define access rules
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints — login and register
                 .requestMatchers("/api/auth/**").permitAll()
-                // All other endpoints require authentication
                 .anyRequest().authenticated()
             )
-            // Stateless session — no HttpSession
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            // Add JWT filter before Spring's username/password filter
             .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthenticationFilter(jwtService, userDetailsService()),
-        UsernamePasswordAuthenticationFilter.class);
+
+            // ✅ SIMPLE & CORRECT
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
-    /** Load user from DB by username (used by Spring Security) */
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
@@ -77,13 +67,6 @@ public class SecurityConfig {
             .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
-@Bean
-public JwtAuthenticationFilter jwtAuthenticationFilter(JwtService jwtService,
-                                                       UserDetailsService userDetailsService) {
-    return new JwtAuthenticationFilter(jwtService, userDetailsService);
-}
-
-    /** Authentication provider that uses DB user + BCrypt */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -92,32 +75,33 @@ public JwtAuthenticationFilter jwtAuthenticationFilter(JwtService jwtService,
         return provider;
     }
 
-    /** BCrypt password encoder */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /** Authentication manager (used by auth controller) */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    /** CORS configuration — configurable via cors.allowed-origins */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
+
         List<String> origins = Arrays.stream(allowedOrigins.split(","))
             .map(String::trim)
             .filter(origin -> !origin.isEmpty())
             .collect(Collectors.toList());
+
         config.setAllowedOrigins(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 }

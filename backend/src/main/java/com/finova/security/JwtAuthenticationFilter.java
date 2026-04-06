@@ -19,12 +19,20 @@ import java.io.IOException;
  * JWT Filter — runs once per request.
  * Reads the Authorization header, validates the JWT, and sets authentication in Spring Security context.
  */
+
+
+public JwtAuthenticationFilter(JwtService jwtService,
+                               @org.springframework.context.annotation.Lazy UserDetailsService userDetailsService) {
+    this.jwtService = jwtService;
+    this.userDetailsService = userDetailsService;
+}
 @Component
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+
+@org.springframework.context.annotation.Lazy
+private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
